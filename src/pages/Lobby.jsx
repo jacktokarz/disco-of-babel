@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 export default function Lobby() {
   const navigate = useNavigate()
   const name = localStorage.getItem('name')
-  const [code, setCode] = useState('');
+  const [gameName, setGameName] = useState('');
   const [games, setGames] = useState([]);
 
 
@@ -21,27 +21,25 @@ export default function Lobby() {
   }
 
   async function createGame() {
-    const gameCode = Math.random().toString(36).substring(2, 6).toUpperCase()
-
     const { data: game } = await supabase
       .from('games')
-      .insert({ code: gameCode })
+      .insert({ name: gameName })
       .select()
-      .single()
+      .single();
 
     await supabase.from('players').insert({
       name,
       game_id: game.id
-    })
+    });
 
     navigate(`/game/${game.id}`)
   }
 
-  async function joinGame() {
+  async function joinGame(gameId) {
     const { data: game } = await supabase
       .from('games')
       .select()
-      .eq('code', code)
+      .eq('id', gameId)
       .single()
 
     if (!game) return alert('Game not found')
@@ -66,12 +64,7 @@ export default function Lobby() {
     return (
       <div key="1">
         <h2>Game {game.id}</h2>
-        <input
-          placeholder="Game code"
-          value={code}
-          onChange={e => setCode(e.target.value)}
-        />
-        <button onClick={joinGame}>Join Game</button>
+        <button onClick={() => joinGame(game.id)}>Join Game</button>
       </div>
     );
   });
@@ -79,7 +72,13 @@ export default function Lobby() {
   return (
     <>
       <h1>Lobby</h1>
-      <button onClick={createGame}>Create Game</button>
+      <h2>Make a game</h2>
+      <input
+        placeholder="Game name"
+        value={gameName}
+        onChange={e => setGameName(e.target.value)}
+      />
+      <button disabled={gameName.length < 1} onClick={createGame}>Create Game</button>
 
       <hr />
 
