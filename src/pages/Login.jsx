@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../supabase';
 
 export default function Login() {
   const [name, setName] = useState('')
@@ -7,9 +8,23 @@ export default function Login() {
 
   function submit(e) {
     e.preventDefault()
-    if (!name) return
-    localStorage.setItem('name', name)
-    navigate('/lobby')
+    if (!name) return;
+    localStorage.setItem('name', name);
+
+    const { data: player } = await supabase
+      .from('players')
+      .select()
+      .eq('name', name)
+      .single();
+
+    console.log("here's the player: ", player);
+    if (player!==null) {
+      await supabase.from('players').insert({
+        name,
+        game_id: game.id
+      });
+    }
+    navigate('/lobby');
   }
 
   return (

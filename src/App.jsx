@@ -4,7 +4,12 @@ import Lobby from './pages/Lobby'
 import Game from './pages/Game'
 
 export default function App() {
-  const name = localStorage.getItem('name')
+  const name = localStorage.getItem('name');
+  console.log(
+    'key log: ',
+    import.meta.env.VITE_SUPABASE_URL,
+    import.meta.env.VITE_SUPABASE_ANON_KEY?.slice(0, 6)
+  );
 
   return (
     <Routes>

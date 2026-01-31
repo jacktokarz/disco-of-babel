@@ -1,11 +1,23 @@
-import { supabase } from '../supabase'
-import { useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { supabase } from '../supabase';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 export default function Lobby() {
   const navigate = useNavigate()
   const name = localStorage.getItem('name')
-  const [code, setCode] = useState('')
+  const [code, setCode] = useState('');
+  const [games, setGames] = useState([]);
+
+
+  async function fetchGames() {
+    if (document.hidden) return;
+    const { data } = await supabase
+      .from('games')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    setGames(data || [])
+  }
 
   async function createGame() {
     const gameCode = Math.random().toString(36).substring(2, 6).toUpperCase()
@@ -36,10 +48,18 @@ export default function Lobby() {
     await supabase.from('players').insert({
       name,
       game_id: game.id
-    })
+    });
 
     navigate(`/game/${game.id}`)
   }
+
+  useEffect(() => {
+    fetchGames()
+
+    const interval = setInterval(fetchGames, 3000)
+
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <>
