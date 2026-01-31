@@ -1,6 +1,7 @@
+import React from 'react';
 import { supabase } from '../supabase';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function Lobby() {
   const navigate = useNavigate()
@@ -61,6 +62,20 @@ export default function Lobby() {
     return () => clearInterval(interval)
   }, [])
 
+  const gamesListDisplay = games.map((game) => {
+    return (
+      <div key="1">
+        <h2>Game {game.id}</h2>
+        <input
+          placeholder="Game code"
+          value={code}
+          onChange={e => setCode(e.target.value)}
+        />
+        <button onClick={joinGame}>Join Game</button>
+      </div>
+    );
+  });
+
   return (
     <>
       <h1>Lobby</h1>
@@ -68,12 +83,7 @@ export default function Lobby() {
 
       <hr />
 
-      <input
-        placeholder="Game code"
-        value={code}
-        onChange={e => setCode(e.target.value)}
-      />
-      <button onClick={joinGame}>Join Game</button>
+      {gamesListDisplay}
     </>
   )
 }
