@@ -242,7 +242,7 @@ export default function Game() {
               const joinResult = await updateGame(game, newGameData);
               if (Array.isArray(joinResult)) {
                 const newGameData = await fetchGame(game.name);
-                musicAudio.play();
+                // musicAudio.play();
                 if (checkIfReady(newGameData)) {
                   updateGame(game, { readying: false, horse: false, cat: false, pigeon: false, rat: false });
                 }
