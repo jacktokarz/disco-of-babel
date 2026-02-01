@@ -1,88 +1,174 @@
 import React from 'react';
-import { supabase } from '../supabase';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import Modal from 'react-modal';
+import Dropdown from 'react-dropdown';
+import 'react-dropdown/style.css';
+import {
+  checkIfReady,
+  filterOutRoles,
+} from '../utilities/helpers.jsx';
+import {
+  createGame,
+  deleteGame,
+  fetchGame,
+  fetchGames,
+  updateGame,
+} from '../utilities/supabaseCalls.jsx'
+
+const roleOptions = [
+  'fox',
+  'wolf',
+  'pigeon',
+  'turtle'
+];
 
 export default function Lobby() {
-  const navigate = useNavigate()
-  const name = localStorage.getItem('name')
+  const navigate = useNavigate();
+  const chosenRole = localStorage.getItem('role');
+  const chosenGame = localStorage.getItem('gameName');
   const [gameName, setGameName] = useState('');
+  const [selectedRole, setSelectedRole] = useState(null);
   const [games, setGames] = useState([]);
+  const [createModalVis, setCreateModalVis] = useState(false);
+  const [createError, setCreateError] = useState('');
+  const [joinError, setJoinError] = useState('');
 
-
-  async function fetchGames() {
-    if (document.hidden) return;
-    const { data } = await supabase
-      .from('games')
-      .select('*')
-      .order('created_at', { ascending: false })
-
-    setGames(data || [])
-  }
-
-  async function createGame() {
-    const { data: game } = await supabase
-      .from('games')
-      .insert({ name: gameName })
-      .select()
-      .single();
-
-    await supabase.from('players').insert({
-      name,
-      game_id: game.id
-    });
-
-    navigate(`/game/${game.id}`)
-  }
-
-  async function joinGame(gameId) {
-    const { data: game } = await supabase
-      .from('games')
-      .select()
-      .eq('id', gameId)
-      .single()
-
-    if (!game) return alert('Game not found')
-
-    await supabase.from('players').insert({
-      name,
-      game_id: game.id
-    });
-
-    navigate(`/game/${game.id}`)
-  }
+  console.log('game name and role ', chosenGame, chosenRole);
 
   useEffect(() => {
-    fetchGames()
+    fetchGames(setGames);
 
-    const interval = setInterval(fetchGames, 3000)
+    const interval = setInterval(() => fetchGames(setGames), 3000)
 
     return () => clearInterval(interval)
-  }, [])
+  }, []);
 
+  const closeCreateModal = () => {
+    setGameName('');
+    setSelectedRole(null);
+    setCreateModalVis(false);
+    setCreateError('');
+  };
   const gamesListDisplay = games.map((game) => {
+    if (chosenGame !== null && chosenGame !== game.name) {
+      return null;
+    }
+    const remainingRoles = filterOutRoles(game, roleOptions);
+    const joinButtons = remainingRoles.map((role) => {
+      return (
+        <div key={role}>
+          <button onClick={async () => {
+            const newGameData = { [role]: true };
+            const joinResult = await updateGame(game, newGameData);
+            console.log("join result ", joinResult);
+            if (Array.isArray(joinResult)) {
+              localStorage.setItem('role', role);
+              localStorage.setItem('gameName', game.name);
+              setJoinError('');
+              const newGameData = await fetchGame(game.name);
+              if (checkIfReady(newGameData)) {
+                updateGame(game, { readying: true, fox: false, wolf: false, pigeon: false, turtle: false });
+              }
+            }
+            else {
+              setJoinError('There was an error joining this game: ',joinResult);
+            }
+          }}>
+            Join Game as {role}
+          </button>
+        </div>
+      );
+    });
+    const enterButton = (
+      <button
+        disabled={!game.readying}
+        onClick={() => navigate(`/game/${game.name}`)}
+      >
+        Enter Game
+      </button>
+    );
     return (
-      <div key="1">
-        <h2>Game {game.id}</h2>
-        <button onClick={() => joinGame(game.id)}>Join Game</button>
+      <div key={game.name}>
+        <h2>Game {game.name}</h2>
+        {chosenRole === null ? joinButtons : enterButton}
+        <button onClick={() => updateGame(game, { fox: false, wolf: false, pigeon: false, turtle: false, readying: false })}>
+          Reset Roles
+        </button>
+        <button onClick={() => deleteGame(game.name)}>
+          Delete Game
+        </button>
       </div>
     );
   });
 
+  const createModal = (
+    <Modal
+      isOpen={createModalVis}
+      onRequestClose={closeCreateModal}
+      contentLabel="create modal"
+    >
+      <h2>Create a game</h2>
+      <p>{createError}</p>
+      <button onClick={closeCreateModal}>close</button>
+      <form>
+        <input
+          placeholder="game title"
+          value={gameName}
+          onChange={e => setGameName(e.target.value)}
+        />
+        <Dropdown
+          options={roleOptions}
+          onChange={(e) => setSelectedRole(e.value)}
+          value={null}
+          placeholder="Select a role"
+        />
+        <button
+          disabled={gameName.length < 1 || selectedRole == null}
+          onClick={async () => {
+            const createResult = await createGame({ name: gameName, [selectedRole]: true });
+            console.log('create game result', createResult);
+            if(createResult.name !== null) {
+              localStorage.setItem('role', selectedRole);
+              localStorage.setItem('gameName', gameName);
+              closeCreateModal();
+            }
+            else {
+              setCreateError('There was an error creating your game? ', createResult);
+            }
+          }}
+        >
+          Create Game
+        </button>
+      </form>
+    </Modal>
+  );  
+
   return (
     <>
-      <h1>Lobby</h1>
-      <h2>Make a game</h2>
-      <input
-        placeholder="Game name"
-        value={gameName}
-        onChange={e => setGameName(e.target.value)}
-      />
-      <button disabled={gameName.length < 1} onClick={createGame}>Create Game</button>
-
-      <hr />
-
+      <h1>Babble! at the Disco</h1>
+      <div>
+        <p>Welcome! You are about to embark on a game of abstruse assembling, blundered building, and confused construction.</p>
+        <p>It`s as easy as ABC</p>
+        <p>A game can only be played with exactly 4 players. You must be in the same place, with the game`s blocks in the center of a table.</p>
+        <p>To begin, click Create Game. Give it a name, and choose your role (don`t overthink it).</p>
+        <p>Have the other 3 people join your game and choose their role.</p>
+        <p>Once the game is filled, you will be able to play!</p>
+      </div>
+      <p>{joinError}</p>
       {gamesListDisplay}
+
+      <br />
+      <br />
+
+      <button
+        disabled={chosenGame!==null && chosenRole!==null}
+        onClick={() => setCreateModalVis(true)}
+      >
+        Create Game
+      </button>
+
+      {createModal}
     </>
   )
 }
