@@ -84,6 +84,7 @@ export default function Lobby() {
               else {
                 setJoinError('There was an error joining this game: ',joinResult);
               }
+              navigate(`/game/${game.name}`);
             }}
           >
             Join Game as {role}
@@ -157,6 +158,7 @@ export default function Lobby() {
             localStorage.setItem('role', selectedRole);
             localStorage.setItem('gameName', gameName);
             closeCreateModal();
+            navigate(`/game/${gameName}`);
           }}
         >
           Create Game
