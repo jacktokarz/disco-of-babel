@@ -8,6 +8,8 @@ import { fetchGame, updateGame } from '../utilities/supabaseCalls.jsx';
 import { checkIfReady } from '../utilities/helpers.jsx';
 import { accordionStyle, accordionSummaryStyle, accordionDetailsStyle, solutions } from '../utilities/constants.jsx';
 import music from '../sounds/song.mp3';
+import musicTwo from '../sounds/song2.mp3';
+import musicThree from '../sounds/song3.mp3';
 
 async function fetchAndSetGame(name, setGame) {
   const result = await fetchGame(name);
@@ -33,7 +35,7 @@ async function importSongs(role) {
 
 const musicAudio = new Audio(music);
 musicAudio.loop = true;
-musicAudio.volume = 0.6;
+musicAudio.volume = 0.75;
 const audio = new Audio();
 audio.loop = true;
 // const roundEndAudio = new Audio();
@@ -64,12 +66,15 @@ export default function Game() {
     switch (game.currentRound) {
       case 1:
         audio.src = oneSong;
+        musicAudio.src = music;
         break;
       case 2:
         audio.src = twoSong;
+        musicAudio.src = musicTwo;
         break;
       case 3:
         audio.src = threeSong;
+        musicAudio.src = musicThree;
         break;
       case 4:
         audio.src = fourSong;

@@ -66,7 +66,7 @@ export default function Lobby() {
       return (
         <div key={role}>
           <button 
-            disabled={game.currentRound > 1}
+            disabled={game.currentRound > 1 || game.readying === true}
             onClick={async () => {
               const newGameData = { [role]: true };
               const joinResult = await updateGame(game, newGameData);
@@ -93,9 +93,8 @@ export default function Lobby() {
     });
     const enterButton = (
       <div>
-        <p>You are the {chosenRole}. Once all roles are selected, you will be able to enter the game.</p>
+        <p>You are the {chosenRole}.</p>
         <button
-          disabled={!game.readying}
           onClick={() => navigate(`/game/${game.name}`)}
         >
           Enter Game
