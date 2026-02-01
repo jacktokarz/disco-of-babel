@@ -17,11 +17,20 @@ main {
 }
 
 button {
-  padding: 30px;
-  width: 300px;
+  font-size: 20px;
+  font-family: monospace;
+  padding: 8px 16px;
+  margin: 10px;
   min-width: fit-content;
   border-radius: 4px;
+}
 
+button:focus {
+  background-color: gray;
+}
+
+button:hover {
+  background-color: '#c1cfbb';
 }
 
 .basic-modal {

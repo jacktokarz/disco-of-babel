@@ -9,5 +9,5 @@ export function filterOutRoles(joinModalData, roleOptions) {
 }
 
 export function checkIfReady(game) {
-  return (game.fox && game.wolf && game.pigeon && game.turtle);
+  return (game.horse && game.cat && game.pigeon && game.rat);
 }

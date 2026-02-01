@@ -19,13 +19,14 @@ import {
   fetchGame,
   fetchGames,
   updateGame,
-} from '../utilities/supabaseCalls.jsx'
+} from '../utilities/supabaseCalls.jsx';
+import { accordionStyle, accordionSummaryStyle, accordionDetailsStyle } from '../utilities/constants.jsx';
 
 const roleOptions = [
-  'fox',
-  'wolf',
+  'horse',
+  'cat',
   'pigeon',
-  'turtle'
+  'rat'
 ];
 
 export default function Lobby() {
@@ -73,7 +74,7 @@ export default function Lobby() {
               setJoinError('');
               const newGameData = await fetchGame(game.name);
               if (checkIfReady(newGameData)) {
-                updateGame(game, { readying: true, fox: false, wolf: false, pigeon: false, turtle: false });
+                updateGame(game, { readying: true, horse: false, cat: false, pigeon: false, rat: false });
               }
             }
             else {
@@ -98,16 +99,17 @@ export default function Lobby() {
     );
     return (
       <div key={game.name}>
-        <Accordion>
+        <Accordion style={accordionStyle}>
           <AccordionSummary
+            style={accordionSummaryStyle}
             expandIcon={<ExpandMoreIcon />}
             id={`game${game.name}-header`}
           >
             <div>Game {game.name}</div>
           </AccordionSummary>
-          <AccordionDetails>
+          <AccordionDetails style={accordionDetailsStyle}>
             {chosenRole === null ? joinButtons : enterButton}
-            <button onClick={() => updateGame(game, { fox: false, wolf: false, pigeon: false, turtle: false, readying: false })}>
+            <button onClick={() => updateGame(game, { horse: false, cat: false, pigeon: false, rat: false, readying: false })}>
               Reset Agents
             </button>
             <button onClick={() => deleteGame(game.name)}>

@@ -7,7 +7,6 @@ export default function App() {
   const [color, setColor] = useState('#333333');
 
   function slightlyChangeColor(passedColor) {
-    console.log('changing this color: ', passedColor);
     const hexSpot = 2*(Math.floor(Math.random() * 2.99) + 1); // this should result in either 2, 4, or 6;
     const newDigit = (passedColor.charAt(hexSpot) === '0') ? 9 : (passedColor.charAt(hexSpot) - 1);
     const newColor = passedColor.substring(0,hexSpot) + newDigit + passedColor.substring(hexSpot+1);
@@ -22,11 +21,6 @@ export default function App() {
 
     return () => clearInterval(interval)
   }, [color]);
-
-  console.log(
-    import.meta.env.VITE_SUPABASE_URL,
-    import.meta.env.VITE_SUPABASE_ANON_KEY?.slice(0, 6)
-  );
 
   return (
     <Routes>
