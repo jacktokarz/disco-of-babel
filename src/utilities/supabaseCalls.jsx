@@ -37,7 +37,7 @@ export async function fetchGame(name) {
     .select()
     .eq('name', name);
 
-  return data;
+  return data[0];
 }
 
 export async function updateGame(gameData, newGameData) {

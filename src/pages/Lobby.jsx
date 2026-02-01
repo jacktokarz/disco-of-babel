@@ -6,6 +6,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
@@ -45,7 +46,7 @@ export default function Lobby() {
   useEffect(() => {
     fetchGames(setGames);
 
-    const interval = setInterval(() => fetchGames(setGames), 3000)
+    const interval = setInterval(() => fetchGames(setGames), 1000)
 
     return () => clearInterval(interval)
   }, []);
@@ -75,7 +76,9 @@ export default function Lobby() {
                 localStorage.setItem('gameName', game.name);
                 setJoinError('');
                 const newGameData = await fetchGame(game.name);
+                console.log('checking if ',newGameData);
                 if (checkIfReady(newGameData)) {
+                  console.log('it is ready');
                   updateGame(game, { readying: true, horse: false, cat: false, pigeon: false, rat: false });
                 }
               }
@@ -133,13 +136,15 @@ export default function Lobby() {
       <h2>Create a game</h2>
       <p>{createError}</p>
       <button onClick={closeCreateModal}>close</button>
-      <form>
+      <FormControl fullWidth>
         <input
+          style={{ "fontSize": '20px' }}
           placeholder="game title"
           value={gameName}
           onChange={e => setGameName(e.target.value)}
         />
-        <InputLabel >Select an Agent</InputLabel>
+        <br />
+        <InputLabel style={{"marginTop": '60px', "fontSize": '20px'}} >Select an Agent</InputLabel>
         <Select
           value={selectedRole}
           label="Select an Agent"
@@ -150,9 +155,10 @@ export default function Lobby() {
         <button
           disabled={gameName.length < 1 || selectedRole == null}
           onClick={async () => {
+            console.log("creating ",{ name: gameName, [selectedRole]: true });
             const createResult = await createGame({ name: gameName, [selectedRole]: true });
             console.log('create game result', createResult);
-            if(createResult.name !== null) {
+            if(createResult.name === null) {
               localStorage.setItem('role', selectedRole);
               localStorage.setItem('gameName', gameName);
               closeCreateModal();
@@ -164,7 +170,7 @@ export default function Lobby() {
         >
           Create Game
         </button>
-      </form>
+      </FormControl>
     </Modal>
   );  
 

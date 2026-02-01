@@ -58,7 +58,7 @@ export default function Game() {
     fetchAndSetGame(name, setGame);
     importSongs(chosenRole);
 
-    const interval = setInterval(() => fetchAndSetGame(name, setGame), 3000)
+    const interval = setInterval(() => fetchAndSetGame(name, setGame), 1000)
 
     return () => clearInterval(interval)
   }, []);
@@ -89,6 +89,7 @@ export default function Game() {
         break;
     }
     console.log("let's play");
+    musicAudio.play();
     audio.play();
   });
 
