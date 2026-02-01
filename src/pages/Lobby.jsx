@@ -5,8 +5,9 @@ import Modal from 'react-modal';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
-import Dropdown from 'react-dropdown';
-import 'react-dropdown/style.css';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import {
   checkIfReady,
   filterOutRoles,
@@ -37,7 +38,7 @@ export default function Lobby() {
   const [createError, setCreateError] = useState('');
   const [joinError, setJoinError] = useState('');
 
-  console.log('game name and role ', chosenGame, chosenRole);
+  console.log('game name and role ', typeof chosenGame, chosenRole != null);
 
   useEffect(() => {
     fetchGames(setGames);
@@ -128,12 +129,14 @@ export default function Lobby() {
           value={gameName}
           onChange={e => setGameName(e.target.value)}
         />
-        <Dropdown
-          options={roleOptions}
-          onChange={(e) => setSelectedRole(e.value)}
-          value={null}
-          placeholder="Select an Agent"
-        />
+        <InputLabel >Select an Agent</InputLabel>
+        <Select
+          value={selectedRole}
+          label="Select an Agent"
+          onChange={(e) => setSelectedRole(e.target.value)}
+        >
+          {roleOptions.map((role) => <MenuItem key={role} value={role}>{role}</MenuItem>)}
+        </Select>
         <button
           disabled={gameName.length < 1 || selectedRole == null}
           onClick={async () => {
@@ -162,7 +165,7 @@ export default function Lobby() {
         <p>Welcome! You are about to embark on a game of abstruse assembling, blundered building, and confused construction.</p>
         <p>It`s as easy as ABC</p>
         <p>A game can only be played with exactly 4 players. You must be in the same place, with the game`s blocks in the center of a table.</p>
-        <p>To begin, click Create Game. Give it a name, and choose your Agent codename (don`t overthink it).</p>
+        <p>To begin, click Create Game. Give it a name, and choose your Agent animal codename (don`t overthink it).</p>
         <p>Have the other 3 people join your game and choose their role.</p>
         <p>Once the game is filled, you will be able to play!</p>
       </div>
@@ -177,6 +180,18 @@ export default function Lobby() {
         onClick={() => setCreateModalVis(true)}
       >
         Create Game
+      </button>
+
+      <br />
+      <br />
+
+      <button
+        onClick={() => {
+          localStorage.removeItem('role');
+          localStorage.removeItem('gameName');
+        }}
+      >
+        Something has gone horribly wrong! Reset my browser, please.
       </button>
 
       {createModal}
