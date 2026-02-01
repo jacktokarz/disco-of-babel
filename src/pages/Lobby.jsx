@@ -64,23 +64,26 @@ export default function Lobby() {
     const joinButtons = remainingRoles.map((role) => {
       return (
         <div key={role}>
-          <button onClick={async () => {
-            const newGameData = { [role]: true };
-            const joinResult = await updateGame(game, newGameData);
-            console.log("join result ", joinResult);
-            if (Array.isArray(joinResult)) {
-              localStorage.setItem('role', role);
-              localStorage.setItem('gameName', game.name);
-              setJoinError('');
-              const newGameData = await fetchGame(game.name);
-              if (checkIfReady(newGameData)) {
-                updateGame(game, { readying: true, horse: false, cat: false, pigeon: false, rat: false });
+          <button 
+            disabled={game.currentRound > 1}
+            onClick={async () => {
+              const newGameData = { [role]: true };
+              const joinResult = await updateGame(game, newGameData);
+              console.log("join result ", joinResult);
+              if (Array.isArray(joinResult)) {
+                localStorage.setItem('role', role);
+                localStorage.setItem('gameName', game.name);
+                setJoinError('');
+                const newGameData = await fetchGame(game.name);
+                if (checkIfReady(newGameData)) {
+                  updateGame(game, { readying: true, horse: false, cat: false, pigeon: false, rat: false });
+                }
               }
-            }
-            else {
-              setJoinError('There was an error joining this game: ',joinResult);
-            }
-          }}>
+              else {
+                setJoinError('There was an error joining this game: ',joinResult);
+              }
+            }}
+          >
             Join Game as {role}
           </button>
         </div>
@@ -199,7 +202,7 @@ export default function Lobby() {
           localStorage.removeItem('gameName');
         }}
       >
-        Something has gone horribly wrong! Reset my browser, please.
+        Something has gone horribly wrong! Reset my environment, please.
       </button>
 
       {createModal}
