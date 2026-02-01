@@ -109,7 +109,7 @@ export default function Game() {
       instructionLine = 'The Rat keep the Pigeon on their right.';
   }
   const instructions = (
-    <Accordion defaultExpanded style={accordionStyle}>
+    <Accordion style={accordionStyle}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         id={`instructions`}
