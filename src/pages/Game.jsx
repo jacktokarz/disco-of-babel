@@ -26,21 +26,22 @@ async function importSongs(role) {
   oneSong = oneSong.default;
   twoSong = await import(`../sounds/two/${role}.mp3`);
   twoSong = twoSong.default;
-  // threeSong = await import(`../sounds/three/${role}.mp3`);
-  // threeSong = threeSong.default;
-  // fourSong = await import(`../sounds/four/${role}.mp3`);
-  // fourSong = fourSong.default;
-  // fiveSong = await import(`../sounds/five/${role}.mp3`);
-  // fiveSong = fiveSong.default;
-  // sixSong = await import(`../sounds/six/${role}.mp3`);
-  // sixSong = sixSong.default;
+  threeSong = await import(`../sounds/three/${role}.mp3`);
+  threeSong = threeSong.default;
+  fourSong = await import(`../sounds/four/${role}.mp3`);
+  fourSong = fourSong.default;
+  fiveSong = await import(`../sounds/five/${role}.mp3`);
+  fiveSong = fiveSong.default;
+  sixSong = await import(`../sounds/six/${role}.mp3`);
+  sixSong = sixSong.default;
 }
 
 const musicAudio = new Audio(music);
 musicAudio.loop = true;
 musicAudio.volume = 0.6;
-let audio = new Audio();
+const audio = new Audio();
 audio.loop = true;
+// const roundEndAudio = new Audio();
 
 export default function Game() {
   const chosenRole = localStorage.getItem('role');

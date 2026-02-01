@@ -24,8 +24,7 @@ export default function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/lobby" />} />
-      <Route path="/lobby" element={<Lobby />} />
+      <Route path="/" element={<Lobby />} />
       <Route path="/game/:name" element={<Game />} />
     </Routes>
   )

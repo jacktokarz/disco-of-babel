@@ -70,13 +70,12 @@ export default function Lobby() {
             onClick={async () => {
               const newGameData = { [role]: true };
               const joinResult = await updateGame(game, newGameData);
-              console.log("join result ", joinResult);
               if (Array.isArray(joinResult)) {
                 localStorage.setItem('role', role);
                 localStorage.setItem('gameName', game.name);
                 setJoinError('');
                 const newGameData = await fetchGame(game.name);
-                console.log('checking if ',newGameData);
+                console.log('after joining data ', newGameData);
                 if (checkIfReady(newGameData)) {
                   console.log('it is ready');
                   updateGame(game, { readying: true, horse: false, cat: false, pigeon: false, rat: false });
@@ -155,17 +154,10 @@ export default function Lobby() {
         <button
           disabled={gameName.length < 1 || selectedRole == null}
           onClick={async () => {
-            console.log("creating ",{ name: gameName, [selectedRole]: true });
             const createResult = await createGame({ name: gameName, [selectedRole]: true });
-            console.log('create game result', createResult);
-            if(createResult.name === null) {
-              localStorage.setItem('role', selectedRole);
-              localStorage.setItem('gameName', gameName);
-              closeCreateModal();
-            }
-            else {
-              setCreateError('There was an error creating your game? ', createResult);
-            }
+            localStorage.setItem('role', selectedRole);
+            localStorage.setItem('gameName', gameName);
+            closeCreateModal();
           }}
         >
           Create Game
