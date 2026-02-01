@@ -6,3 +6,16 @@ export const solutions = {
 		turtle: '',
 	},
 }
+
+export const accordionStyle = {
+	"backgroundColor": '#c1cfbb'
+}
+
+export const accordionSummaryStyle = {
+	"fontSize": "20px",
+	"fontFamily": "monospace"
+}
+
+export const accordionDetailsStyle = {
+	"fontFamily": "monospace"
+}

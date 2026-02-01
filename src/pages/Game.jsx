@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { fetchGame, updateGame } from '../utilities/supabaseCalls.jsx';
 import { checkIfReady } from '../utilities/helpers.jsx';
-import { solutions } from '../utilities/constants.jsx';
+import { accordionStyle, accordionSummaryStyle, AccordionDetailsStyle, solutions } from '../utilities/constants.jsx';
 import exampleSound from '../sounds/example.mp3';
 import secondExample from '../sounds/exampleTwo.mp3';
 
@@ -48,6 +52,43 @@ export default function Game() {
     }
     audio.play();
   });
+
+  let instructionLine = '';
+  switch(chosenRole) {
+    case 'fox':
+      instructionLine = 'The Fox is the right-hand beast of the Wolf.';
+      break;
+    case 'wolf':
+      instructionLine = 'The Wolf stares hungrily at the Turtle.';
+      break;
+    case 'turtle':
+      instructionLine = 'The Turtle is to the left of the winged animal.';
+      break;
+    case 'pigeon':
+      instructionLine = 'The pigeon stays as far as possible from the cunning Fox.';
+  }
+  const instructions = (
+    <Accordion defaultExpanded style={accordionStyle}>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        id={`instructions`}
+        style={accordionSummaryStyle}
+      >
+        Instructions
+      </AccordionSummary>
+      <AccordionDetails style={accordionDetailsStyle}>
+        <p>This game is played over a series of rounds in which you and your fellow agents collaborate to put 6 bricks in the correct orientation.</p>
+        <p>Each round will build on the other, creating a stack of bricks.</p>
+        <p>At the beginning of a round, every agent will hear a unique message in their headphones.</p>
+        <p>These messages contain your personal Objective, Directive, and Code Word.</p>
+        <p>The <span class="italic">Objective</span> is your piece of the requirements for how the bricks need to be laid out.</p>
+        <p>The <span class="italic">Directive</span> is your limitation in how you are allowed to communicate with the other agents.</p>
+        <p>Your <span class="italic">Code Word</span> is what should be spelled on the side of the bricks(s) facing you at the end of the round. You can use this to double-check the solution.</p>
+        <p><span class="important">IMPORTANT!</span> Do NOT share your Directive or Code Word with other agents!</p>
+        <p>Conversely, you should absolutely share your Objective (as well as you can).</p>
+      </AccordionDetails>
+    </Accordion>
+  );
 
   const waitingToReady = (
     <div hidden={!othersNeedToFinish}>
@@ -120,22 +161,9 @@ export default function Game() {
       return;
     }
 
-    let instructionLine = '';
-    switch(chosenRole) {
-      case 'fox':
-        instructionLine = 'The Fox is the right-hand beast of the Wolf.';
-        break;
-      case 'wolf':
-        instructionLine = 'The Wolf stares hungrily at the Turtle.';
-        break;
-      case 'turtle':
-        instructionLine = 'The Turtle is to the left of the winged animal.';
-        break;
-      case 'pigeon':
-        instructionLine = 'The pigeon stays as far as possible from the cunning Fox.';
-    }
-    const instructions = (
+    const gettingStarted = (
       <div>
+        <h2>Orientation:</h2>
         <p>For this game, you must orient yourselves in a certain order along the 4 sides of a table.</p>
         <p>Consider this to be a warm-up puzzle.</p>
         <p>{instructionLine}</p>
@@ -147,7 +175,7 @@ export default function Game() {
     return (
       <div>
         <div hidden={!youNeedToReady}>
-          {instructions}
+          {gettingStarted}
           <br />
           <p hidden={!roundConfirm}>To check your work, in clockwise order you should be: Fox, Wolf, Pigeon, Turtle</p>
           <button hidden={roundConfirm} onClick={() => setRoundConfirm(true)}>
@@ -195,6 +223,7 @@ export default function Game() {
     <>
       <h1>Game</h1>
       <p>Your Agent: {chosenRole}</p>
+      {instructions}
       <RoundOne />
       {roundTwoThroughFive}
     </>

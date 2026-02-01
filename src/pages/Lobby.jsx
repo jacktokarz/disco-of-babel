@@ -5,6 +5,7 @@ import Modal from 'react-modal';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
@@ -85,17 +86,21 @@ export default function Lobby() {
       );
     });
     const enterButton = (
-      <button
-        disabled={!game.readying}
-        onClick={() => navigate(`/game/${game.name}`)}
-      >
-        Enter Game
-      </button>
+      <div>
+        <p>You are the {chosenRole}. Once all roles are selected, you will be able to enter the game.</p>
+        <button
+          disabled={!game.readying}
+          onClick={() => navigate(`/game/${game.name}`)}
+        >
+          Enter Game
+        </button>
+      </div>
     );
     return (
       <div key={game.name}>
         <Accordion>
           <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
             id={`game${game.name}-header`}
           >
             <div>Game {game.name}</div>
@@ -164,7 +169,8 @@ export default function Lobby() {
       <div>
         <p>Welcome! You are about to embark on a game of abstruse assembling, blundered building, and confused construction.</p>
         <p>It`s as easy as ABC</p>
-        <p>A game can only be played with exactly 4 players. You must be in the same place, with the game`s blocks in the center of a table.</p>
+        <p>A game can only be played with exactly 4 players.</p>
+        <p>You must be in the same place, with the game`s blocks in the center of a table, and a pair of headphones each.</p>
         <p>To begin, click Create Game. Give it a name, and choose your Agent animal codename (don`t overthink it).</p>
         <p>Have the other 3 people join your game and choose their role.</p>
         <p>Once the game is filled, you will be able to play!</p>
