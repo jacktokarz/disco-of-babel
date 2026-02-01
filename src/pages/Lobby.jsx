@@ -2,6 +2,9 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Modal from 'react-modal';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import {
@@ -90,14 +93,22 @@ export default function Lobby() {
     );
     return (
       <div key={game.name}>
-        <h2>Game {game.name}</h2>
-        {chosenRole === null ? joinButtons : enterButton}
-        <button onClick={() => updateGame(game, { fox: false, wolf: false, pigeon: false, turtle: false, readying: false })}>
-          Reset Roles
-        </button>
-        <button onClick={() => deleteGame(game.name)}>
-          Delete Game
-        </button>
+        <Accordion>
+          <AccordionSummary
+            id={`game${game.name}-header`}
+          >
+            <div>Game {game.name}</div>
+          </AccordionSummary>
+          <AccordionDetails>
+            {chosenRole === null ? joinButtons : enterButton}
+            <button onClick={() => updateGame(game, { fox: false, wolf: false, pigeon: false, turtle: false, readying: false })}>
+              Reset Agents
+            </button>
+            <button onClick={() => deleteGame(game.name)}>
+              Delete Game
+            </button>
+          </AccordionDetails>
+        </Accordion>
       </div>
     );
   });
@@ -121,7 +132,7 @@ export default function Lobby() {
           options={roleOptions}
           onChange={(e) => setSelectedRole(e.value)}
           value={null}
-          placeholder="Select a role"
+          placeholder="Select an Agent"
         />
         <button
           disabled={gameName.length < 1 || selectedRole == null}
@@ -151,7 +162,7 @@ export default function Lobby() {
         <p>Welcome! You are about to embark on a game of abstruse assembling, blundered building, and confused construction.</p>
         <p>It`s as easy as ABC</p>
         <p>A game can only be played with exactly 4 players. You must be in the same place, with the game`s blocks in the center of a table.</p>
-        <p>To begin, click Create Game. Give it a name, and choose your role (don`t overthink it).</p>
+        <p>To begin, click Create Game. Give it a name, and choose your Agent codename (don`t overthink it).</p>
         <p>Have the other 3 people join your game and choose their role.</p>
         <p>Once the game is filled, you will be able to play!</p>
       </div>

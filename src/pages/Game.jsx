@@ -3,11 +3,21 @@ import { useParams } from 'react-router-dom'
 import { fetchGame, updateGame } from '../utilities/supabaseCalls.jsx';
 import { checkIfReady } from '../utilities/helpers.jsx';
 import { solutions } from '../utilities/constants.jsx';
+import exampleSound from '../sounds/example.mp3';
+import secondExample from '../sounds/exampleTwo.mp3';
 
 async function fetchAndSetGame(name, setGame) {
   const result = await fetchGame(name);
-  setGame(result);
+  if (Array.isArray(result)) {
+    setGame(result[0]);
+  }
+  else {
+    console.log("ERROR FETCHING ", name, result);
+  }
 }
+
+let audio = new Audio(exampleSound);
+audio.loop = true;
 
 export default function Game() {
   const chosenRole = localStorage.getItem('role');
@@ -21,7 +31,7 @@ export default function Game() {
   const youNeedToFinish = (game.readying === false && game[chosenRole] === false);
   const othersNeedToFinish = (game.readying === false && game[chosenRole] === true);
 
-  console.log('game page game: ', game);
+  console.log('game page audio: ', audio);
 
   useEffect(() => {
     fetchAndSetGame(name, setGame);
@@ -31,6 +41,13 @@ export default function Game() {
     return () => clearInterval(interval)
   }, []);
 
+
+  const playAudio = (() => {
+    if (game.currentRound === 2) {
+      audio.src = secondExample;
+    }
+    audio.play();
+  });
 
   const waitingToReady = (
     <div hidden={!othersNeedToFinish}>
@@ -65,6 +82,13 @@ export default function Game() {
 
   const playingGame = (
     <div hidden={!youNeedToFinish}>
+      <p>Listen to the recording from your handler to learn what challenges you must overcome to relay its message to your team.</p>
+      <button hidden={!audio.paused} onClick={() => playAudio()}>
+        Play Message
+      </button>
+      <button hidden={audio.paused} onClick={() => audio.currentTime = 0}>
+        Restart Message
+      </button>
       <p hidden={!roundConfirm}>To check your work, the letters on the edge(s) of the piece(s) facing you should say {solutions[game.currentRound] === undefined ? 'ERROR' : solutions[game.currentRound][chosenRole]}</p>
       <button hidden={roundConfirm} onClick={() => setRoundConfirm(true)}>
         Check Solution
@@ -76,6 +100,8 @@ export default function Game() {
           const newGameData = { [chosenRole]: true };
           const joinResult = await updateGame(game, newGameData);
           if (Array.isArray(joinResult)) {
+            audio.pause();
+            audio.currentTime = 0;
             const newGameData = await fetchGame(game.name);
             if (checkIfReady(newGameData)) {
               updateGame(game, { currentRound: 2, readying: true, fox: false, wolf: false, pigeon: false, turtle: false });
@@ -89,7 +115,7 @@ export default function Game() {
   );
 
 
-  const roundOne = (() => {
+  const RoundOne = () => {
     if (game.currentRound != 1) {
       return;
     }
@@ -146,9 +172,10 @@ export default function Game() {
         </div>
         {waitingToPlay}
         {playingGame}
+        {waitingToReady}
       </div>
     );
-  });
+  };
 
   const roundTwoThroughFive = [2,3,4,5].map((roundNumber) => {
     if (game.currentRound != roundNumber) {
@@ -156,10 +183,10 @@ export default function Game() {
     }
     return (
       <div key={`round-${roundNumber}`}>
-        {waitingToReady}
         {readyingGame}
         {waitingToPlay}
         {playingGame}
+        {waitingToReady}
       </div>
     );
   });
@@ -167,8 +194,8 @@ export default function Game() {
   return (
     <>
       <h1>Game</h1>
-      <p>Your Role: {chosenRole}</p>
-      {roundOne}
+      <p>Your Agent: {chosenRole}</p>
+      <RoundOne />
       {roundTwoThroughFive}
     </>
   );
