@@ -11,12 +11,7 @@ import music from '../sounds/song.mp3';
 
 async function fetchAndSetGame(name, setGame) {
   const result = await fetchGame(name);
-  if (Array.isArray(result)) {
-    setGame(result[0]);
-  }
-  else {
-    console.log("ERROR FETCHING ", name, result);
-  }
+  setGame(result);
 }
 
 let oneSong, twoSong, threeSong, fourSong, fiveSong, sixSong;
