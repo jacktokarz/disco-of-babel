@@ -126,7 +126,7 @@ export default function Game() {
         <p>The <span className="italic">Directive</span> is your limitation in how you are allowed to communicate with the other agents.</p>
         <p>Your <span className="italic">Code Word</span> (when provided) is what should be spelled on the side of the bricks(s) facing you at the end of the round. You can use this to double-check the solution.</p>
         <p><span className="important">IMPORTANT!</span> Do NOT share your Directive or Code Word with other agents!</p>
-        <p>Conversely, you should absolutely share your Objective (as well as you can).</p>
+        <p>Conversely, you should absolutely share your Objective (as well as you can)...</p>
       </AccordionDetails>
     </Accordion>
   );
@@ -177,14 +177,12 @@ export default function Game() {
         `To check your work, the letters on the edge(s) of the piece(s) facing you should say ${solutions[game.currentRound][chosenRole]}`}
       </p>
       <button
-        className="float-right"
         hidden={roundConfirm}
         onClick={() => setRoundConfirm(true)}
       >
         Check Solution
       </button>
       <button
-        className="float-right"
         hidden={!roundConfirm}
         onClick={async () => {
           setRoundConfirm(false);
@@ -276,7 +274,8 @@ export default function Game() {
   return (
     <>
       <h1>Game</h1>
-      <p>Your Agent: {chosenRole}</p>
+      <p>Agent: {chosenRole}</p>
+      <p>Round: {game.currentRound}</p>
       <h2 className="sparkles" hidden={!displaySuccess}>
         Congratulations agent. You saved the world! (or at least saved a fox? idk)
       </h2>
