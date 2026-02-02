@@ -172,7 +172,7 @@ export default function Game() {
         Restart Message
       </button>
       <p hidden={!roundConfirm}>
-        {solutions[game.currentRound] === null || solutions[game.currentRound] === undefined ?
+        {solutions[game.currentRound] === undefined || solutions[game.currentRound][chosenRole] === null  ?
         'No code word for you this round, agent. If all agents are satisfied, then you can proceed.' :
         `To check your work, the letters on the edge(s) of the piece(s) facing you should say ${solutions[game.currentRound][chosenRole]}`}
       </p>
