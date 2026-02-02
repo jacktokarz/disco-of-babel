@@ -35,6 +35,7 @@ export const solutions = {
 		pigeon: "BITE",
 		rat: null,
 	},
+	7: {}
 }
 
 export const accordionStyle = {
@@ -49,3 +50,10 @@ export const accordionSummaryStyle = {
 export const accordionDetailsStyle = {
 	"fontFamily": "monospace"
 }
+
+export const roleOptions = [
+  'horse',
+  'cat',
+  'pigeon',
+  'rat'
+];

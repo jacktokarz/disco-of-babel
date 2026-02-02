@@ -1,98 +1,135 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState } from 'react';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { fetchGame, updateGame } from '../utilities/supabaseCalls.jsx';
-import { checkIfReady } from '../utilities/helpers.jsx';
-import { accordionStyle, accordionSummaryStyle, accordionDetailsStyle, solutions } from '../utilities/constants.jsx';
-import music from '../sounds/song.mp3';
-import musicTwo from '../sounds/song2.mp3';
-import musicThree from '../sounds/song3.mp3';
-
-async function fetchAndSetGame(name, setGame) {
-  const result = await fetchGame(name);
-  setGame(result);
-}
+import {
+  accordionStyle,
+  accordionSummaryStyle,
+  accordionDetailsStyle,
+  roleOptions,
+  solutions,
+} from '../utilities/constants.jsx';
+import music from '../sounds/music/song.mp3';
+import musicTwo from '../sounds/music/song2.mp3';
+import musicThree from '../sounds/music/song3.mp3';
+import credits from '../sounds/ending.mp3';
+// import roundEnd from '../sounds/end.wav';
+// import roundEndTwo from '../sounds/endTwo,wav';
+// import roundEndThree from '../sounds/endThree.wav';
+// import roundEndFour from '../sounds/endFour.wav';
+// import roundEndFive from '../sounds/endFive.wav';
+// import roundEndSix from '../sounds/endSix.wav';
 
 let oneSong, twoSong, threeSong, fourSong, fiveSong, sixSong;
-
-async function importSongs(role) {
-  oneSong = await import(`../sounds/one/${role}.mp3`);
-  oneSong = oneSong.default;
-  twoSong = await import(`../sounds/two/${role}.mp3`);
-  twoSong = twoSong.default;
-  threeSong = await import(`../sounds/three/${role}.mp3`);
-  threeSong = threeSong.default;
-  fourSong = await import(`../sounds/four/${role}.mp3`);
-  fourSong = fourSong.default;
-  fiveSong = await import(`../sounds/five/${role}.mp3`);
-  fiveSong = fiveSong.default;
-  sixSong = await import(`../sounds/six/${role}.mp3`);
-  sixSong = sixSong.default;
-}
 
 const musicAudio = new Audio(music);
 musicAudio.loop = true;
 musicAudio.volume = 0.75;
-const audio = new Audio();
-audio.loop = true;
-// const roundEndAudio = new Audio();
+const instructionsAudio = new Audio();
+// const roundEndAudio = new Audio(roundEnd);
 
 export default function Game() {
-  const chosenRole = localStorage.getItem('role');
-  const { name } = useParams();
-  const [game, setGame] = useState({});
+  const [currentRound, setCurrentRound] = useState(1);
+  const [chosenRole, setChosenRole] = useState(null);
+  const [playingRound, setPlayingRound] = useState(false);
   const [displaySuccess, setDisplaySuccess] = useState(false);
   const [roundConfirm, setRoundConfirm] = useState(false);
 
-  const youNeedToReady = (game.readying === true && game[chosenRole] === false);
-  const othersNeedToReady = (game.readying === true && game[chosenRole] === true);
-  const youNeedToFinish = (game.readying === false && game[chosenRole] === false);
-  const othersNeedToFinish = (game.readying === false && game[chosenRole] === true);
-
-  useEffect(() => {
-    fetchAndSetGame(name, setGame);
-    importSongs(chosenRole);
-
-    const interval = setInterval(() => fetchAndSetGame(name, setGame), 1000)
-
-    return () => clearInterval(interval)
-  }, []);
-
+  async function importSongs(role) {
+    oneSong = await import(`../sounds/one/${role}.mp3`);
+    oneSong = oneSong.default;
+    twoSong = await import(`../sounds/two/${role}.mp3`);
+    twoSong = twoSong.default;
+    threeSong = await import(`../sounds/three/${role}.mp3`);
+    threeSong = threeSong.default;
+    fourSong = await import(`../sounds/four/${role}.mp3`);
+    fourSong = fourSong.default;
+    fiveSong = await import(`../sounds/five/${role}.mp3`);
+    fiveSong = fiveSong.default;
+    sixSong = await import(`../sounds/six/${role}.mp3`);
+    sixSong = sixSong.default;
+  }
 
   const playAudio = (() => {
-    switch (game.currentRound) {
+    const musicStringParts = musicAudio.src.split('/');
+    console.log('music string ', musicStringParts[musicStringParts.length-1]);
+    switch (currentRound) {
       case 1:
-        audio.src = oneSong;
-        musicAudio.src = music;
+        instructionsAudio.src = oneSong;
+        // roundEndAudio.src = roundEnd;
+        if (musicStringParts[musicStringParts.length-1] !== "song.mp3") {
+          musicAudio.src = music;
+        }
         break;
       case 2:
-        audio.src = twoSong;
-        musicAudio.src = musicTwo;
+        instructionsAudio.src = twoSong;
+        // roundEndAudio.src = roundEndTwo;
         break;
       case 3:
-        audio.src = threeSong;
-        musicAudio.src = musicThree;
+        instructionsAudio.src = threeSong;
+        // roundEndAudio.src = roundEndThree;
+        if (musicStringParts[musicStringParts.length-1] !== "song2.mp3") {
+          musicAudio.src = musicTwo;
+        }
         break;
       case 4:
-        audio.src = fourSong;
+        instructionsAudio.src = fourSong;
+        // roundEndAudio.src = roundEndFour;
+        if (musicStringParts[musicStringParts.length-1] !== "song2.mp3") {
+          musicAudio.src = musicTwo;
+        }
         break;
       case 5:
-        audio.src = fiveSong;
+        instructionsAudio.src = fiveSong;
+        // roundEndAudio.src = roundEndFive;
+        if (musicStringParts[musicStringParts.length-1] !== "song3.mp3") {
+          musicAudio.src = musicThree;
+        }
         break;
       case 6:
-        audio.src = sixSong;
+        instructionsAudio.src = sixSong;
+        // roundEndAudio.src = roundEndSix;
+        if (musicStringParts[musicStringParts.length-1] !== "song3.mp3") {
+          musicAudio.src = musicThree;
+        }
         break;
       default:
         console.log('no case');
         break;
     }
-    console.log("let's play");
     musicAudio.play();
-    audio.play();
+    instructionsAudio.play();
   });
+
+  const introduction = (
+    <div>
+      <p>Welcome! You are about to embark on a game of abstruse assembling, blundered building, and confused construction.</p>
+      <p>It`s as easy as ABC</p>
+      <p>A game can only be played with exactly 4 players who each have their own headphones.</p>
+      <p>You must be in the same place, with the game`s blocks in the center of a table.</p>
+      <p>To begin, discuss among your group who will play each of the 4 animal codenames listed below (everyone must play a different role).</p>
+      <p>When you are ready to play, click on the role, and you will receive further instructions.</p>
+    </div>
+  );
+
+  const chooseRole = (
+    <div>
+      {roleOptions.map((role) => {
+        return (
+          <button
+            key={role}
+            onClick={async () => {
+              setChosenRole(role);
+              await importSongs(role);
+            }}
+          >
+            Play as {role}
+          </button>
+        );
+      })}
+    </div>
+  );
 
   let instructionLine = '';
   switch(chosenRole) {
@@ -131,52 +168,50 @@ export default function Game() {
     </Accordion>
   );
 
-  const waitingToReady = (
-    <div hidden={!othersNeedToFinish}>
-      <p>Waiting for other players to proceed...</p>
-    </div>
-  );
-
   const readyingGame = (
-    <div hidden={!youNeedToReady}>
+    <div hidden={playingRound || currentRound > 6}>
       <button
-        onClick={async () => {
-          const newGameData = { [chosenRole]: true };
-          const joinResult = await updateGame(game, newGameData);
-          if (Array.isArray(joinResult)) {
-            const newGameData = await fetchGame(game.name);
-            if (checkIfReady(newGameData)) {
-              updateGame(game, { readying: false, horse: false, cat: false, pigeon: false, rat: false });
-            }
-          }
+        onClick={() => {
+          setPlayingRound(true);
         }}
       >
-        Start Round {game.currentRound}!
+        Start Round {currentRound}!
       </button>
-    </div>
-  );
-
-  const waitingToPlay = (
-    <div hidden={!othersNeedToReady}>
-      <p>Waiting for other players to ready up...</p>
+      <button
+        style={{ "fontSize": '16px', "marginTop": '60px' }}
+        hidden={currentRound === 6}
+        onClick={() => setCurrentRound(currentRound+1)}
+      >
+        Skip This Round
+      </button>
     </div>
   );
 
   const playingGame = (
-    <div hidden={!youNeedToFinish}>
-      <p>Listen to the recording from your handler to learn what challenges you must overcome to relay its message to your team.</p>
-      <button hidden={!audio.paused} onClick={() => playAudio()}>
+    <div hidden={!playingRound}>
+      <p>Listen to the recording from your handler to learn what challenges you must overcome while relaying its message to your team.</p>
+      <button
+        hidden={!instructionsAudio.paused}
+        onClick={() => playAudio()}
+      >
         Play Message
       </button>
-      <button hidden={audio.paused} onClick={() => audio.currentTime = 0}>
+      <button
+        hidden={instructionsAudio.paused}
+        onClick={() => {
+          instructionsAudio.currentTime = 0;
+          instructionsAudio.play();
+        }}
+      >
         Restart Message
       </button>
       <p hidden={!roundConfirm}>
-        {solutions[game.currentRound] === null || solutions[game.currentRound] === undefined ?
+        {solutions[currentRound][chosenRole] === null ?
         'No code word for you this round, agent. If all agents are satisfied, then you can proceed.' :
-        `To check your work, the letters on the edge(s) of the piece(s) facing you should say ${solutions[game.currentRound][chosenRole]}`}
+        `To check your work, the letters along the edges of the piece(s) facing you should say ${solutions[currentRound][chosenRole]}`}
       </p>
       <button
+        style={{ "marginTop": '60px' }}
         hidden={roundConfirm}
         onClick={() => setRoundConfirm(true)}
       >
@@ -186,29 +221,27 @@ export default function Game() {
         hidden={!roundConfirm}
         onClick={async () => {
           setRoundConfirm(false);
-          const newGameData = { [chosenRole]: true };
-          const joinResult = await updateGame(game, newGameData);
-          if (Array.isArray(joinResult)) {
-            audio.pause();
-            audio.currentTime = 0;
-            const newGameData = await fetchGame(game.name);
-            if (checkIfReady(newGameData)) {
-              if (game.currentRound === 6) {
-                setDisplaySuccess(true);
-              }
-              updateGame(game, { currentRound: parseInt(game.currentRound)+1, readying: true, horse: false, cat: false, pigeon: false, rat: false });
-            }
+          setPlayingRound(false);
+          setCurrentRound(currentRound+1);
+          instructionsAudio.pause();
+          instructionsAudio.currentTime = 0;
+          // roundEndAudio.play();
+          if (currentRound === 6) {
+            setDisplaySuccess(true);
+            musicAudio.pause();
+            instructionsAudio.src = credits;
+            instructionsAudio.play();
           }
         }}
       >
-        Next Round!
+        Finish Round!
       </button>
     </div>
   );
 
 
   const RoundOne = () => {
-    if (game.currentRound != 1) {
+    if (currentRound != 1) {
       return;
     }
 
@@ -225,63 +258,63 @@ export default function Game() {
 
     return (
       <div>
-        <div hidden={!youNeedToReady}>
+        <div hidden={playingRound}>
           {gettingStarted}
           <br />
           <p hidden={!roundConfirm}>To check your work, in clockwise order you should be: Horse, Cat, Pigeon, Rat.</p>
           <button hidden={roundConfirm} onClick={() => setRoundConfirm(true)}>
-            Start
+            Ready
           </button>
           <button
             hidden={!roundConfirm}
-            onClick={async () => {
+            onClick={() => {
               setRoundConfirm(false);
-              const newGameData = { [chosenRole]: true };
-              const joinResult = await updateGame(game, newGameData);
-              if (Array.isArray(joinResult)) {
-                const newGameData = await fetchGame(game.name);
-                // musicAudio.play();
-                if (checkIfReady(newGameData)) {
-                  updateGame(game, { readying: false, horse: false, cat: false, pigeon: false, rat: false });
-                }
-              }
+              setPlayingRound(true);
             }}
           >
-            Actually Start
+            Actually Start!
+          </button>
+          <button
+            style={{ "display": 'block', "fontSize": '16px', "marginTop": '60px' }}
+            onClick={() => setCurrentRound(currentRound+1)}
+          >
+            Skip Round 1
           </button>
         </div>
-        {waitingToPlay}
         {playingGame}
-        {waitingToReady}
       </div>
     );
   };
 
   const roundTwoThroughSix = [2,3,4,5,6].map((roundNumber) => {
-    if (game.currentRound != roundNumber) {
+    if (currentRound != roundNumber) {
       return;
     }
     return (
       <div key={`round-${roundNumber}`}>
         {readyingGame}
-        {waitingToPlay}
         {playingGame}
-        {waitingToReady}
       </div>
     );
   });
 
   return (
     <>
-      <h1>Game</h1>
-      <p>Agent: {chosenRole}</p>
-      <p>Round: {game.currentRound}</p>
-      <h2 className="sparkles" hidden={!displaySuccess}>
-        Congratulations agent. You saved the world! (or at least saved a fox? idk)
-      </h2>
-      {instructions}
-      <RoundOne />
-      {roundTwoThroughSix}
+      <h1>Disco-Babble!</h1>
+      <div hidden={chosenRole !== null}>
+        {introduction}
+        {chooseRole}
+      </div>
+      <div hidden={chosenRole === null}>
+        <p>Agent: {chosenRole}</p>
+        <p>Round: {currentRound}</p>
+        <h2 className="sparkles" hidden={!displaySuccess}>
+          Congratulations agent. You saved the world! Now get ready to smash that tower :D
+        </h2>
+        {instructions}
+        <RoundOne />
+        {roundTwoThroughSix}
+      </div>
     </>
   );
 }

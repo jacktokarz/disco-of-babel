@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import Lobby from './pages/Lobby';
+import { Routes, Route } from 'react-router-dom';
 import Game from './pages/Game';
 
 export default function App() {
@@ -24,8 +23,7 @@ export default function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Lobby />} />
-      <Route path="/game/:name" element={<Game />} />
+      <Route path="/" element={<Game />} />
     </Routes>
   )
 }
