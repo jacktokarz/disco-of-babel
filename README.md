@@ -1,16 +1,14 @@
-# React + Vite
+Renamed Disco-Babble partway through development.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Made as part of Global Game Jam 2026.
 
-Currently, two official plugins are available:
+This is the webapp of a game requiring physical blocks to play.
+The webapp allows players to hear secret messages based on their role and the current round of the game.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This webapp is made with React and hosted on Vercel.
+Here is the address: https://disco-babble.vercel.app/
+Here is the game's itch address: https://lazalien.itch.io/discobabble
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Initially, it had a Supabase database that allowed more nuanced coordination of games.
+But this was unnecessary and removed.
+That version of the game is preserved in the branch `many-games` in case those ambitions return.
